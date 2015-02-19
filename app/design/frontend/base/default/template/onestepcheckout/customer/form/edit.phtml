@@ -157,12 +157,7 @@
             $('confirmation').removeClassName('required-entry');
         }
     }
-    if ($('taxvat')) {
-        $('taxvat').addClassName('validate-taxvat');
-        $('taxvat').observe('keyup', function(event) {
-            mascara(this, mdocumento);
-        });
-    }
+    $('taxvat').addClassName('validate-taxvat');    
 
 <?php if ($this->getCustomer()->getChangePassword()): ?>
         setPasswordForm(true);
