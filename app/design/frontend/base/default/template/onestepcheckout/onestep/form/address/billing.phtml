@@ -289,7 +289,7 @@
     Validation.add('validate-taxvat', '<?php echo $this->__('This is a required field.') ?>', function(value) {
         if (validaCPF(value,0)) {
             var ok = false;
-            var url = <?php echo $this->getUrl('/onestepcheckout/ajax/check_taxvat/',array('_secure' => Mage::app()->getStore()->isCurrentlySecure() ));?>
+            var url = '<?php echo $this->getUrl('/onestepcheckout/ajax/check_taxvat/',array('_secure' => Mage::app()->getStore()->isCurrentlySecure() ));?>';
             new Ajax.Request(url, {
                 method: 'post',
                 asynchronous: false,
