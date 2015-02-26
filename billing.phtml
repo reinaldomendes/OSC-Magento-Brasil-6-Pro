@@ -61,7 +61,7 @@
                         <?php $_tipopessoa = $this->getLayout()->createBlock('onestepcheckout/widget_tipopessoa') ?>
                         <?php if ($_tipopessoa->isEnabled()): ?>
                             <li class="control tipopessoa li-radio-tipo-pessoa">
-                                <input type="radio" name="billing[radio_tipopessoa]" value="Física" id="billing:fisica" class="radio" title="CPF" <?php if ($this->getDataFromSession('radio_tipopessoa') == 'Física'): ?> checked="checked"<?php endif; ?>/><label for="billing:fisica"><?php echo $this->__('Pessoa Física') ?></label>
+                                <input type="radio" name="billing[radio_tipopessoa]" checked="checked"  value="Física" id="billing:fisica" class="radio" title="CPF" <?php if ($this->getDataFromSession('radio_tipopessoa') == 'Física'): ?> checked="checked"<?php endif; ?>/><label for="billing:fisica"><?php echo $this->__('Pessoa Física') ?></label>
                                 <input type="radio" name="billing[radio_tipopessoa]" value="Jurídica" id="billing:juridica" class="radio" title="CNPJ" <?php if ($this->getDataFromSession('radio_tipopessoa') == 'Jurídica'): ?> checked="checked"<?php endif; ?>/><label for="billing:juridica"><?php echo $this->__('Pessoa Jurídica') ?></label>
                             </li>
                             <li class="wide hidden li-select-tipo-pessoa">
@@ -75,12 +75,15 @@
                     </li>                    
                     <?php if (!$this->isCustomerLoggedIn()): ?>
                         <?php if ($this->isTaxvatEnabled()): ?>
-                            <li class="wide li-taxvat">
+                            <li class="wide li-taxvat swatch-label">
+                                <label for="billing:taxvat" class="required for-fisica "><em>*</em><?php echo __('CPF'); ?></label>
+                                <label for="billing:taxvat" class="required for-juridica"><em>*</em><?php echo __('CNPJ'); ?></label>
                                 <?php echo $this->getTaxvatHtml() ?>
                             </li>
                         <?php endif; ?>
-                        <li class="wide li-ie">
-                            <label for="billing:ie" ><?php echo $this->__('IE (Inscrição Estadual)') ?></label>
+                        <li class="wide li-ie swatch-label">
+                            <label for=":billingie" class="for-fisica "><?php __('RG'); ?></label>
+                            <label for="billing:ie" class="for-juridica "><?php echo $this->__('IE (Inscrição Estadual)') ?></label>                                                
                             <div class="input-box">
                                 <input type="text" id="billing:ie" name="billing[ie]" title="<?php echo $this->__('IE (Inscrição Estadual)') ?>" class="input-text" value="<?php echo $this->getDataFromSession('ie'); ?>" />
                             </div>
@@ -134,14 +137,14 @@
                 <!-- Aqui começa endereço -->
 
                 <?php if (Mage::getStoreConfig('onestepcheckout/general/is_show_titles')): ?><li class="osc-title"><?php echo $this->__('Billing Address') ?></li><?php endif ?>
-                
+
                 <li class="wide li-country">
                     <label for="billing:country_id" class="required"><em>*</em><?php echo $this->__('Country') ?></label>
                     <div class="input-box">
                         <?php echo $this->getCountryHtmlSelect('billing') ?>
                     </div>
                 </li>
-                
+
                 <li class="fields li-postcode">
                     <div class="field">
                         <label for="billing:postcode" class="required"><em>*</em><?php echo $this->__('Zip/Postal Code') ?></label>
@@ -161,19 +164,23 @@
                 <?php $_streetValidationClass = $this->getAttributeValidationClass('street'); ?>
                 <?php $streetValues = $this->getDataFromSession('street'); ?>
                 <li class="wide li-street1">
-                    <label for="billing:street1" class="required"><em>*</em><?php echo $this->__('Street Address') ?></label>
-                    <div class="input-box">
-                        <input type="text" title="<?php echo $this->__('Street Address') ?>" name="billing[street][]" id="billing:street1" class="input-text <?php echo $_streetValidationClass ?>" value="<?php echo (isset($streetValues[0])) ? $streetValues[0] : ''; ?>" autocomplete="off"/>
+                    <div class="field">
+                        <label for="billing:street1" class="required"><em>*</em><?php echo $this->__('Street Address') ?></label>
+                        <div class="input-box">
+                            <input type="text" title="<?php echo $this->__('Street Address') ?>" name="billing[street][]" id="billing:street1" class="input-text <?php echo $_streetValidationClass ?>" value="<?php echo (isset($streetValues[0])) ? $streetValues[0] : ''; ?>" autocomplete="off"/>
+                        </div>
                     </div>
                 </li>
                 <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
                 <?php
                 for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++):
                     ?>
-                    <li class="wide li-street<?php echo $_i ;?>">
-                        <label for="billing:street<?php echo $_i ?>" <?php if ($_i != 3): ?> class="required" <?php endif; ?>><?php if ($_i != 3): ?> <em>*</em> <?php endif; ?><?php echo $this->__('Street Address ' . $_i) ?></label>
-                        <div class="input-box">
-                            <input type="text" title="<?php echo $this->__('Street Address ' . $_i) ?>" name="billing[street][<?php echo $_i ?>]" id="billing:street<?php echo $_i ?>" class="input-text <?php if ($_i != 3): ?>required-entry<?php endif; ?>" value="<?php echo $streetValues[$_i]; ?>" autocomplete="off"/>
+                    <li class="wide li-street<?php echo $_i; ?>">
+                        <div class="field">
+                            <label for="billing:street<?php echo $_i ?>" <?php if ($_i != 3): ?> class="required" <?php endif; ?>><?php if ($_i != 3): ?> <em>*</em> <?php endif; ?><?php echo $this->__('Street Address ' . $_i) ?></label>
+                            <div class="input-box">
+                                <input type="text" title="<?php echo $this->__('Street Address ' . $_i) ?>" name="billing[street][<?php echo $_i ?>]" id="billing:street<?php echo $_i ?>" class="input-text <?php if ($_i != 3): ?>required-entry<?php endif; ?>" value="<?php echo $streetValues[$_i]; ?>" autocomplete="off"/>
+                            </div>
                         </div>
                     </li>
                 <?php endfor; ?>
@@ -207,11 +214,11 @@
                         </div>
                     </div>
                 </li>
-                
+
                 <?php if ($this->isCustomerLoggedIn() && $this->customerHasAddresses()): ?>
                     <li class="control li-save-in-address-book">
                         <label for="billing:save_in_address_book"><input type="checkbox" name="billing[save_in_address_book]" value="1" title="<?php echo $this->__('Save in address book') ?>" id="billing:save_in_address_book" onchange="if (window.shipping)
-                                    shipping.setSameAsBilling(false);"<?php if ($this->getDataFromSession('save_in_address_book')): ?> checked="checked"<?php endif; ?> class="checkbox" /><?php echo $this->__('Save in address book') ?></label>
+                                        shipping.setSameAsBilling(false);"<?php if ($this->getDataFromSession('save_in_address_book')): ?> checked="checked"<?php endif; ?> class="checkbox" /><?php echo $this->__('Save in address book') ?></label>
                     </li>
                 <?php else: ?>
                     <li class="no-display"><input type="hidden" name="billing[save_in_address_book]" value="1" /></li>
@@ -243,118 +250,16 @@
 <script type="text/javascript">
     //<![CDATA[
     var billingRegionUpdater = new RegionUpdater('billing:country_id', 'billing:region', 'billing:region_id', <?php echo $this->helper('directory')->getRegionJson() ?>, undefined, 'billing:postcode');
-<?php if (!$this->isCustomerLoggedIn()) : ?>
-        $$("input[name*='radio_tipopessoa']").invoke('on', 'click', function () {
-            var sel = $('billing:tipopessoa');
-            setTipopessoaArea(this.value);
-            for (var i = 0; i < sel.options.length; i++) {
-                if (sel.options[i].text == this.value) {
-                    sel.options[i].selected = true;
-                }
-            }
 
-        });
-        function setTipopessoaArea(arg) {
-            var $wrapper = $('onestepcheckout-address-billing');
-            $wrapper.removeClassName('pessoa-jurica')
-            .removeClassName('pessoa-fisica');
-            if (arg == 'Jurídica') {
-                $wrapper.addClassName('pessoa-jurica');
-                if ($('billing:taxvat')) {
-                    $('billing:taxvat').maxLength = 18;
-                    $('billing:ie').maxLength = 30;
-                    $$('label[for="billing:ie"]').first().update('<em>*</em>IE (Inscrição Estadual)');
-                    $$('label[for="billing:taxvat"]').first().update('<em>*</em>CNPJ');
-                    $$('label[for="billing:firstname"]').first().update('<em>*</em>Razão social');
-                    $$('label[for="billing:lastname"]').first().update('<em>*</em>N. Fantasia');
-                    $('osc-billing-tipopessoa-area').hide();
-                }
-            } else {
-                $wrapper.addClassName('pessoa-fisica');
-                if ($('billing:taxvat')) {
-                    $('billing:taxvat').maxLength = 14;
-                    $('billing:ie').maxLength = 30;
-                    $$('label[for="billing:taxvat"]').first().update('<em>*</em>CPF');
-                    $$('label[for="billing:ie"]').first().update('<em>*</em>RG');
-                    $$('label[for="billing:firstname"]').first().update('<em>*</em>Nome');
-                    $$('label[for="billing:lastname"]').first().update('<em>*</em>Sobrenome');
-                    $('osc-billing-tipopessoa-area').show();
-                }
-            }
-        }
-    <?php if (is_null($this->getDataFromSession('radio_tipopessoa'))): ?>
-            $$('[name*=billing[radio_tipopessoa]]')[0].click();
-    <?php else: ?>
-            if ($('billing:tipopessoa')) {
-                setTipopessoaArea('<?php echo $this->getDataFromSession('radio_tipopessoa') ?>');
-            }
-    <?php endif; ?>
-        Validation.add('validate-email-exist', '<?php echo $this->__('Please enter a valid email address. For example johndoe@domain.com.') ?>', function (value) {
+    var $country = jQuery('[id="billing:country_id"]');
+    $country.on('change', function () {
+        billingRegionUpdater.update();
+    });
+    $country.val('BR');
+    $country.trigger('change');
+    $region = jQuery('[id="billing:region_id"]');
+    $region.find('option[title="Minas Gerais"]').attr('selected', 'selected');
 
-            if (checkMail(value)) {
-                var ok = false;
-                var url = '<?php echo $this->getUrl('/onestepcheckout/ajax/check_email/', array('_secure' => Mage::app()->getStore()->isCurrentlySecure())); ?>';
-                new Ajax.Request(url, {
-                    method: 'post',
-                    asynchronous: false,
-                    parameters: 'email=' + encodeURIComponent(value),
-                    onSuccess: function (transport) {
-                        var obj = response = eval('(' + transport.responseText + ')');
-                        validateTrueEmailMsg = obj.status_desc;
-                        if (obj.result !== 'clean') {
-                            Validation.get('validate-email-exist').error = 'Email já cadastrado';
-                            ok = false;
-                        } else {
-                            ok = true;
-                        }
-                    },
-                    onComplete: function () {
-                        if ($('advice-validate-email-exist-billing:email')) {
-                            $('advice-validate-email-exist-billing:email').remove();
-                        }
-                    }
-                });
-                return ok;
-            } else {
-                Validation.get('validate-email').error = '<?php echo $this->__('Please enter a valid email address. For example johndoe@domain.com.') ?>';
-            }
-        });
-        Validation.add('validate-taxvat', '<?php echo $this->__('This is a required field.') ?>', function (value) {
-            if (validaCPF(value, 0)) {
-                var ok = false;
-                var url = '<?php echo $this->getUrl('/onestepcheckout/ajax/check_taxvat/', array('_secure' => Mage::app()->getStore()->isCurrentlySecure())); ?>';
-                new Ajax.Request(url, {
-                    method: 'post',
-                    asynchronous: false,
-                    parameters: 'taxvat=' + encodeURIComponent(value),
-                    onSuccess: function (transport) {
-                        var obj = response = eval('(' + transport.responseText + ')');
-                        validateTrueEmailMsg = obj.status_desc;
-                        if (obj.result !== 'clean') {
-                            Validation.get('validate-taxvat').error = 'CPF/CNPJ já cadastrado';
-                            ok = false;
-                        } else {
-                            ok = true;
-                        }
-                    },
-                    onComplete: function () {
-                        if ($('advice-validate-taxvat-billing:taxvat')) {
-                            $('advice-validate-taxvat-billing:taxvat').remove();
-                        }
-                    }
-                });
-                return ok;
-            } else {
-                Validation.get('validate-taxvat').error = 'O CPF/CNPJ informado \xE9 inválido';
-            }
-        });
-<?php endif; ?>
-    Validation.add('validate-zip-br', '<?php echo $this->__('Please enter a valid zip code. e.g. 12345678.') ?>', function (v) {
-        return Validation.get('IsEmpty').test(v) || /(^\d{8}$)|(^\d{5}-\d{3}$)/.test(v);
-    });
-    Validation.add('validate-phone-br', '<?php echo $this->__('Please enter a valid phone number. for example, (xx) x4567-8900.') ?>', function (v) {
-        return Validation.get('IsEmpty').test(v) || /^(\()?\d{2}(\))?(-|\s)?\d{5}(-|\s)\d{4}|(\()?\d{2}(\))?(-|\s)?\d{4}(-|\s)\d{4}$/.test(v);
-    });
     $('billing:taxvat').addClassName('validate-taxvat');
     $('billing:telephone').addClassName('validate-phone-br');
     $('billing:fax').addClassName('validate-phone-br');

@@ -63,7 +63,7 @@
                 <?php if ($_tipopessoa->isEnabled()): ?>
                     <li class="control fields tipopessoa li-radio-tipo-pessoa">
                         <div class="field">
-                            <label for="fisica"><input type="radio" name="radio_tipopessoa" value="Física" id="fisica" class="radio" title="CPF" <?php if ($this->getFormData()->getRadioTipopessoa() == 'Física'): ?> checked="checked"<?php endif; ?>/><?php echo $this->__('Individual person') ?></label>
+                            <label for="fisica"><input type="radio" checked="checked" name="radio_tipopessoa" value="Física" id="fisica" class="radio" title="CPF" <?php if ($this->getFormData()->getRadioTipopessoa() == 'Física'): ?> checked="checked"<?php endif; ?>/><?php echo $this->__('Individual person') ?></label>
                         </div>
                         <div class="field">
                             <label for="juridica"><input type="radio" name="radio_tipopessoa" value="Jurídica" id="juridica" class="radio" title="CNPJ" <?php if ($this->getFormData()->getRadioTipopessoa() == 'Jurídica'): ?> checked="checked"<?php endif; ?>/><?php echo $this->__('Legal Entity') ?></label>
@@ -81,12 +81,16 @@
                 <?php $_taxvat = $this->getLayout()->createBlock('customer/widget_taxvat') ?>
                 <?php if ($_taxvat->isEnabled()): ?>
 
-                    <li class="li-taxvat"><?php echo $_taxvat->setTaxvat($this->getFormData()->getTaxvat())->toHtml() ?></li>
-
+                    <li class="li-taxvat swatch-label">
+                        <label for="taxvat" class="required for-fisica"><em>*</em><?php echo __('CPF'); ?></label>
+                        <label for="taxvat" class="required for-juridica"><em>*</em><?php echo __('CNPJ'); ?></label>
+                        <?php echo $_taxvat->setTaxvat($this->getFormData()->getTaxvat())->toHtml() ?>
+                    </li>
                 <?php endif ?>
 
-                <li class="wide required li-ie">
-                    <label for="ie"><?php echo $this->__('IE (Inscrição Estadual)') ?></label>
+                <li class="wide required li-ie swatch-label">
+                    <label for="ie" class="for-fisica"><?php __('RG'); ?></label>
+                    <label for="ie" class="for-juridica"><?php echo $this->__('IE (Inscrição Estadual)') ?></label>                    
                     <div class="input-box">
                         <input type="text" id="ie" name="ie" title="<?php echo $this->__('IE (Inscrição Estadual)') ?>" class="input-text" value="<?php echo $this->getFormData()->getIe(); ?>" />
                     </div>
@@ -169,7 +173,6 @@
                                 <input type="text" title="<?php echo $this->__('Zip/Postal Code') ?>" name="postcode" id="postcode" class="input-text validate-number <?php echo $this->helper('customer/address')->getAttributeValidationClass('postcode') ?>" value="<?php echo $this->escapeHtml($this->getFormData()->getPostcode()) ?>" maxlength="8" onblur="buscaCep('');"/>
                             </div>
                         </div>
-
                     </li>
 
 
@@ -178,16 +181,21 @@
 
                     <?php $_streetValidationClass = $this->helper('customer/address')->getAttributeValidationClass('street'); ?>
                     <li class="wide li-street1">
-                        <label for="street_1" class="required"><em>*</em><?php echo $this->__('Street Address') ?></label>
-                        <div class="input-box">
-                            <input type="text" name="street[]" value="<?php echo $this->escapeHtml($this->getFormData()->getStreet(1)) ?>" title="<?php echo $this->__('Street Address') ?>" id="street_1" class="input-text <?php echo $_streetValidationClass ?>" />
+                        <div class="field">
+                            <label for="street_1" class="required"><em>*</em><?php echo $this->__('Street Address') ?></label>
+                            <div class="input-box">
+                                <input type="text" name="street[]" value="<?php echo $this->escapeHtml($this->getFormData()->getStreet(1)) ?>" title="<?php echo $this->__('Street Address') ?>" id="street_1" class="input-text <?php echo $_streetValidationClass ?>" />
+                            </div>
                         </div>
                     </li>
                     <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
                     <?php for ($_i = 2, $_n = $this->helper('customer/address')->getStreetLines(); $_i <= $_n; $_i++): ?>
                         <li class="wide li-street<?php echo $_i; ?>">
-                            <div class="input-box">
-                                <input type="text" name="street[]" value="<?php echo $this->escapeHtml($this->getFormData()->getStreet($_i)) ?>" title="<?php echo $this->__('Street Address %s', $_i) ?>" id="street_<?php echo $_i ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+                            <div class="field">
+                                <label for="street_1" class="required"><em>*</em><?php echo $this->__("Street Address {$_i}") ?></label>
+                                <div class="input-box">                                
+                                    <input type="text" name="street[]" value="<?php echo $this->escapeHtml($this->getFormData()->getStreet($_i)) ?>" title="<?php echo $this->__('Street Address %s', $_i) ?>" id="street_<?php echo $_i ?>" class="input-text <?php echo $_streetValidationClass ?>" />
+                                </div>
                             </div>
                         </li>
                     <?php endfor; ?>
@@ -249,10 +257,17 @@
         }
     }.bind(dataForm);
 <?php if ($this->getShowAddressFields()): ?>
-        new RegionUpdater('country', 'region', 'region_id', <?php echo $this->helper('directory')->getRegionJson() ?>, undefined, 'zip');
+        var regionUpdater = new RegionUpdater('country', 'region', 'region_id', <?php echo $this->helper('directory')->getRegionJson() ?>, undefined, 'zip');
+
+        var $country = jQuery('#country');
+        $country.on('change', function () {
+            regionUpdater.update();
+        });
+        $country.val('BR');
+        $country.trigger('change');
+        $country.find('option[title="Minas Gerais"]').attr('selected', 'selected');
 <?php endif; ?>
-    var VALIDATE_EMAIL_EXISTS_ERROR = '<?php echo $this->__('Please enter a valid email address. For example johndoe@domain.com.') ?>';
-    var VALIDATE_TAXVAT_ERROR = '<?php echo $this->__('This is a required field.') ?>';
+
     //]]>
 
 </script>

@@ -230,7 +230,7 @@ function loadposthideshow(show, classe, eq) {
 }
 
 
- 
+  
 ////////////////////////////////////////////////////////////////////////////////////////////////
 setTimeout(function() {    
     var VALIDATE_EMAIL_EXISTS_ERROR = 'Por favor informe um email válido. Ex: joao@dominio.com.';
