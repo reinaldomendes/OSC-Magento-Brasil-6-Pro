@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <layout version="0.1.0">
+    <default>
+        <reference name="head">
+            <block type="core/template" template="onestepcheckout/js/base-url.phtml"> </block>
+            <action method="addItem"><type>skin_js</type><name>onestepcheckout/js/tipo-pessoa.js</name></action>
+        </reference>
+    </default>
+        
     <onestepcheckout_index_index translate="label">
         <label>One Step Checkout</label>
         <remove name="left"/>
@@ -10,6 +17,8 @@
         </reference>
         <reference name="head">
             <action method="addItem" ifconfig="onestepcheckout/general/is_jquery"><type>skin_js</type><name>onestepcheckout/js/jquery.min.js</name></action>
+            
+            
             <action method="addItem"><type>skin_js</type><name>onestepcheckout/js/validation.js</name></action>
             <action method="addItem"><type>skin_js</type><name>onestepcheckout/js/onestepcheckout.js</name></action>
             <action method="addItem"><type>skin_js</type><name>onestepcheckout/js/login.js</name></action>
@@ -142,6 +151,7 @@
     </customer_address_form>
     <customer_account_create>
         <reference name="head">
+            
             <action method="addItem" ifconfig="onestepcheckout/general/is_jquery"><type>skin_js</type><name>onestepcheckout/js/jquery.min.js</name></action>
             <action method="addItem" ifconfig="onestepcheckout/general/is_enabled"><type>skin_js</type><name>onestepcheckout/js/validation.js</name></action>
             <action method="addItem" ifconfig="onestepcheckout/general/is_enabled"><type>skin_css</type><name>onestepcheckout/css/onestepcheckout.css</name></action>

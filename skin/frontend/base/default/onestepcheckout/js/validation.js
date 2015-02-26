@@ -47,8 +47,8 @@ function checkMail(mail) {
         if (er.test(mail.value)) {
             return true;
         }
-    } 
-     return false;
+    }
+    return false;
 }
 function PulaCampo(fields) {
     if (fields.value.length == fields.maxLength) {
@@ -133,18 +133,18 @@ function checkCPF(vCPF) {
     return((mControle1 * 10) + mControle);
 }
 function buscaCep(quale) {
-    
-   if (!quale){
-       var cep = jQuery('input[name*="postcode"]').val();
+
+    if (!quale) {
+        var cep = jQuery('input[name*="postcode"]').val();
         if (cep != '' && cep.length == 8) {
-           // loadposthideshow(true, '.postcod-process');
-            jQuery.getScript("/onestepcheckout/ajax/busca_cep?cep="+ cep + "", function() {
+            // loadposthideshow(true, '.postcod-process');
+            jQuery.getScript("/onestepcheckout/ajax/busca_cep?cep=" + cep + "", function () {
                 //loadposthideshow(false, '.postcod-process');
                 if (resultadoCEP["resultado"] != 0) {
-                    jQuery('input[name*="street[]"]').val(unescape(resultadoCEP["tipo_logradouro"]) + " "+ unescape(resultadoCEP["logradouro"]));
+                    jQuery('input[name*="street[]"]').val(unescape(resultadoCEP["tipo_logradouro"]) + " " + unescape(resultadoCEP["logradouro"]));
                     jQuery('input[name*="street[4]"]').val(unescape(resultadoCEP["bairro"]));
                     jQuery('input[name*="city"]').val(unescape(resultadoCEP["cidade"]));
-                    jQuery('select[name*="region_id"]').find('option').each(function() {
+                    jQuery('select[name*="region_id"]').find('option').each(function () {
                         if (this.text == estadoBR(unescape(resultadoCEP["uf"]))) {
                             this.selected = true;
                         }
@@ -155,17 +155,17 @@ function buscaCep(quale) {
                 }
             });
         }
-   }else{
+    } else {
         var cep = jQuery('input[name*="' + quale + '[postcode]"]').val();
         if (cep != '' && cep.length == 8) {
-           // loadposthideshow(true, '.postcod-process');
-            jQuery.getScript("/onestepcheckout/ajax/busca_cep?cep="+ cep + "", function() {
+            // loadposthideshow(true, '.postcod-process');
+            jQuery.getScript("/onestepcheckout/ajax/busca_cep?cep=" + cep + "", function () {
                 //loadposthideshow(false, '.postcod-process');
                 if (resultadoCEP["resultado"] != 0) {
-                    jQuery('input[name*="' + quale + '[street][]"]').val(unescape(resultadoCEP["tipo_logradouro"]) + " "+ unescape(resultadoCEP["logradouro"]));
+                    jQuery('input[name*="' + quale + '[street][]"]').val(unescape(resultadoCEP["tipo_logradouro"]) + " " + unescape(resultadoCEP["logradouro"]));
                     jQuery('input[name*="' + quale + '[street][4]"]').val(unescape(resultadoCEP["bairro"]));
                     jQuery('input[name*="' + quale + '[city]"]').val(unescape(resultadoCEP["cidade"]));
-                    jQuery('select[name*="' + quale + '[region_id]"]').find('option').each(function() {
+                    jQuery('select[name*="' + quale + '[region_id]"]').find('option').each(function () {
                         if (this.text == estadoBR(unescape(resultadoCEP["uf"]))) {
                             this.selected = true;
                         }
@@ -175,8 +175,8 @@ function buscaCep(quale) {
                     alert("Endereço não encontrado para o cep ");
                 }
             });
-        }   
-   }
+        }
+    }
 }
 function estadoBR(uf) {
     var estado;
@@ -185,7 +185,7 @@ function estadoBR(uf) {
         'AL': 'Alagoas',
         'AM': 'Amazonas',
         'AP': 'Amapá',
-        'BA': 'Bahia', 
+        'BA': 'Bahia',
         'CE': 'Ceará',
         'DF': 'Distrito Federal',
         'ES': 'Espírito Santo',
@@ -209,12 +209,12 @@ function estadoBR(uf) {
         'SP': 'São Paulo',
         'TO': 'Tocantins'
     };
-    jQuery.each(obj, function(key, value) {
+    jQuery.each(obj, function (key, value) {
         if (key == uf) {
             estado = value;
         }
     });
-    
+
     return estado;
 }
 function loadposthideshow(show, classe, eq) {
@@ -228,3 +228,80 @@ function loadposthideshow(show, classe, eq) {
         jQuery(classe).hide();
     }
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+setTimeout(function() {    
+    var VALIDATE_EMAIL_EXISTS_ERROR = 'Por favor informe um email válido. Ex: joao@dominio.com.';
+    var VALIDATE_TAXVAT_ERROR = 'Este campo é obrigatório';
+
+    Validation.add('validate-email-exist', VALIDATE_EMAIL_EXISTS_ERROR, function (value) {
+        if (checkMail(value)) {
+            var ok = false;
+            var url = BASE_URL + '/onestepcheckout/ajax/check_email/';
+            new Ajax.Request(url, {
+                method: 'post',
+                asynchronous: false,
+                parameters: 'email=' + encodeURIComponent(value),
+                onSuccess: function (transport) {
+                    var obj = response = eval('(' + transport.responseText + ')');
+                    validateTrueEmailMsg = obj.status_desc;
+                    if (obj.result !== 'clean') {
+                        Validation.get('validate-email-exist').error = 'Email já cadastrado';
+                        ok = false;
+                    } else {
+                        ok = true;
+                    }
+                },
+                onComplete: function () {
+                    if ($('advice-validate-email-exist-email')) {
+                        $('advice-validate-email-exist-email').remove();
+                    }
+                }
+            });
+            return ok;
+        } else {
+            Validation.get('validate-email').error = VALIDATE_EMAIL_EXISTS_ERROR;
+        }
+    });
+
+    Validation.add('validate-taxvat', VALIDATE_TAXVAT_ERROR, function (value) {
+        if (validaCPF(value, 0)) {
+            var ok = false;
+            var url = BASE_URL + '/onestepcheckout/ajax/check_taxvat/';
+            new Ajax.Request(url, {
+                method: 'post',
+                asynchronous: false,
+                parameters: 'taxvat=' + encodeURIComponent(value),
+                onSuccess: function (transport) {
+                    var obj = response = eval('(' + transport.responseText + ')');
+                    validateTrueEmailMsg = obj.status_desc;
+                    if (obj.result !== 'clean') {
+                        Validation.get('validate-taxvat').error = 'CPF/CNPJ já cadastrado';
+                        ok = false;
+                    } else {
+                        ok = true;
+                    }
+                },
+                onComplete: function () {
+                    if ($('advice-validate-taxvat-taxvat')) {
+                        $('advice-validate-taxvat-taxvat').remove();
+                    }
+                }
+            });
+            return ok;
+        } else {
+            Validation.get('validate-taxvat').error = 'O CPF/CNPJ informado \xE9 inválido';
+        }
+    });
+
+
+    Validation.add('validate-zip-br', 'Por favor insira um CEP válido. por exemplo 12345678.', function (v) {
+        return Validation.get('IsEmpty').test(v) || /(^\d{8}$)|(^\d{5}-\d{3}$)/.test(v);
+    });
+    Validation.add('validate-phone-br', 'Por favor insira um número de telefone válido. por exemplo (xx) x4567-8900.', function (v) {
+        return Validation.get('IsEmpty').test(v) || /^(\()?\d{2}(\))?(-|\s)?\d{5}(-|\s)\d{4}|(\()?\d{2}(\))?(-|\s)?\d{4}(-|\s)\d{4}$/.test(v);
+    }
+    );
+});
